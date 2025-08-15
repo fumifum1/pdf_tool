@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>CHanGE.pdf</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+    <header>
+        <div class="hamburger-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="menu.html">ホーム</a></li>
+                <li><a href="join_pdf.html">PDF 結合</a></li>
+                <li><a href="split_pdf.html">PDF 分割</a></li>
+                <li><a href="change_order_pdf.html">PDF ページ順序変更</a></li>
+                <hr>
+                <li><a href="https://fumifum1.github.io/main/index.html">Creator</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="overlay"></div>
+
+    <div class="container">
+        <h1>CHanGE.pdf</h1>
+        <p>PDFファイルをアップロードして、表示されたページを<br>
+            ドラッグ＆ドロップで自由に入れ替えることができます。</p>
+
+        <div>
+            <label for="pdfFileInput" class="file-label-button">ファイルを選択</label><br>
+            <span id="fileNameLabel">選択されていません</span>
+            <input type="file" id="pdfFileInput" accept=".pdf">
+        </div>
+
+        <div id="pageListContainer">
+            <h2>ページの順番（ドラッグ＆ドロップで変更）</h2>
+            <ul id="pageList"></ul>
+        </div>
+
+        <button id="reorderButton">ページの順番を変更</button>
+
+        <div id="log"></div>
+    </div>
+
+    <footer>
+        &copy; 2025.08 vr1.0 PDF Tool
+    </footer>
+
+    <script src="pdf-lib.min.js"></script>
+    <script src="common.js"></script>
+    <script src="change_order_pdf.js"></script>
+
+</body>
+</html>
