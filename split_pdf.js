@@ -5,7 +5,6 @@ const JSZip = window.JSZip;
 const log = document.getElementById('log');
 const splitButton = document.getElementById('splitButton');
 const pdfFileInput = document.getElementById('pdfFileInput');
-const pageRangesInput = document.getElementById('pageRangesInput');
 const fileNameLabel = document.getElementById('fileNameLabel');
 
 // ボタンがクリックされたときの処理を定義
@@ -20,40 +19,8 @@ pdfFileInput.addEventListener('change', () => {
     }
 });
 
-/**
- * ページ範囲の文字列 (例: "1-3, 5, 8-10") を解析し、
- * 0から始まるページ番号の配列に変換します。
- * @param {string} rangesStr - ページ範囲の文字列。
- * @param {number} maxPage - PDFの総ページ数。
- * @returns {number[]} - 処理対象のページ番号の配列 (0-indexed)。
- */
-function parsePageRanges(rangesStr, maxPage) {
-    if (!rangesStr.trim()) {
-        // 入力が空の場合はすべてのページを対象とする
-        return Array.from({ length: maxPage }, (_, i) => i);
-    }
-
-    const ranges = rangesStr.split(',');
-    const pages = new Set();
-
-    for (const range of ranges) {
-        const parts = range.trim().split('-').map(Number);
-        if (parts.length === 1) {
-            if (!isNaN(parts[0])) pages.add(parts[0] - 1);
-        } else if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-            const [start, end] = parts;
-            for (let i = start; i <= end; i++) {
-                pages.add(i - 1);
-            }
-        }
-    }
-
-    return Array.from(pages).filter(p => p >= 0 && p < maxPage).sort((a, b) => a - b);
-}
-
 async function splitPdf() {
     const file = pdfFileInput.files[0];
-    const rangesStr = pageRangesInput.value;
 
     // ログエリアをクリア
     log.innerHTML = '';
@@ -81,14 +48,14 @@ async function splitPdf() {
             : file.name;
 
         const pageCount = originalPdf.getPageCount();
-        const targetPages = parsePageRanges(rangesStr, pageCount);
+        const targetPages = Array.from({ length: pageCount }, (_, i) => i);
 
         if (targetPages.length === 0) {
-            updateStatus('指定されたページが見つかりませんでした。範囲を確認してください。');
+            updateStatus('PDFにページがありません。');
             return;
         }
 
-        updateStatus(`合計 ${pageCount} ページ中、${targetPages.length} ページを処理しています...`);
+        updateStatus(`合計 ${pageCount} ページを処理しています...`);
 
         const zip = new JSZip();
 
