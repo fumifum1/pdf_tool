@@ -91,6 +91,11 @@ button:hover,
     min-height: 100px;
 }
 
+#fileListContainer.dragover {
+    background-color: #e8f0fe;
+    border-color: #4285f4;
+}
+
 #pageList li,
 #fileList li {
     padding: 10px;

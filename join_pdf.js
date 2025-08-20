@@ -3,28 +3,61 @@ const { PDFDocument } = window.PDFLib;
 const log = document.getElementById('log');
 const mergeButton = document.getElementById('mergeButton');
 const pdfFileInput = document.getElementById('pdfFileInput');
+const fileListContainer = document.getElementById('fileListContainer');
 const fileList = document.getElementById('fileList');
 const outputFileNameInput = document.getElementById('outputFileNameInput');
 const fileNameLabel = document.getElementById('fileNameLabel');
 
+let selectedFiles = []; // 選択されたファイルを保持する配列
+
 mergeButton.addEventListener('click', mergePdfs);
 
-// ファイル選択時の処理
-pdfFileInput.addEventListener('change', () => {
-    const files = pdfFileInput.files;
-    if (files.length > 0) {
-        fileNameLabel.textContent = `${files.length}個のファイルを選択中`;
-    } else {
-        fileNameLabel.textContent = '選択されていません';
-    }
-
+// ファイルリストのUIを更新する関数
+function updateFileListUI() {
     fileList.innerHTML = '';
-    for (const file of pdfFileInput.files) {
+    selectedFiles.forEach(file => {
         const listItem = document.createElement('li');
         listItem.textContent = file.name;
         listItem.draggable = true;
         fileList.appendChild(listItem);
+    });
+
+    if (selectedFiles.length > 0) {
+        fileNameLabel.textContent = `${selectedFiles.length}個のファイルを選択中`;
+    } else {
+        fileNameLabel.textContent = '選択されていません';
     }
+}
+
+// ファイルを追加する関数 (重複チェックとPDF形式チェック付き)
+function addFiles(files) {
+    const newFiles = Array.from(files).filter(file =>
+        file.type === 'application/pdf' &&
+        !selectedFiles.some(existingFile => existingFile.name === file.name)
+    );
+    selectedFiles.push(...newFiles);
+    updateFileListUI();
+}
+
+// ファイル選択時の処理
+pdfFileInput.addEventListener('change', () => {
+    addFiles(pdfFileInput.files);
+    // 同じファイルを再度選択できるように値をクリア
+    pdfFileInput.value = '';
+});
+
+// ドラッグ＆ドロップによるファイル追加の処理
+fileListContainer.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    fileListContainer.classList.add('dragover');
+});
+fileListContainer.addEventListener('dragleave', () => {
+    fileListContainer.classList.remove('dragover');
+});
+fileListContainer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileListContainer.classList.remove('dragover');
+    addFiles(e.dataTransfer.files);
 });
 
 // ドラッグ＆ドロップによるファイル順序変更の処理
@@ -72,11 +105,10 @@ function getDragAfterElement(container, y) {
 async function mergePdfs() {
     // UIのリストから現在のファイル順序を取得
     const orderedFileNames = [...fileList.querySelectorAll('li')].map(li => li.textContent);
-    const originalFiles = Array.from(pdfFileInput.files);
 
     // UIの順序に基づいてFileオブジェクトの配列を並べ替える
     const filesToMerge = orderedFileNames.map(name => {
-        return originalFiles.find(file => file.name === name);
+        return selectedFiles.find(file => file.name === name);
     }).filter(Boolean); // 見つからなかったファイルを除外
 
     log.innerHTML = '';
