@@ -260,3 +260,62 @@ footer {
     top: 9px;
     transform: rotate(-45deg);
 }
+
+/* =================================================================
+   Responsive Styles for smaller screens
+   ================================================================= */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        -webkit-text-size-adjust: 100%; /* iOSでの文字サイズ自動調整を防ぐ */
+    }
+
+    .container {
+        margin: 20px auto;
+        padding: 15px;
+        width: auto; /* 幅を自動調整 */
+    }
+
+    h1 {
+        font-size: 24px;
+        letter-spacing: normal; /* スマホでは字間を詰める */
+        word-break: break-word;
+    }
+
+    /* ボタンとファイル選択ラベルを画面幅に合わせる */
+    button,
+    .file-label-button {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 12px 15px; /* タップしやすくする */
+    }
+
+    /* ファイル選択エリアのレイアウトを縦並びに (pdf_jpg.html) */
+    .file-select-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    /* ファイル名表示部分のスタイル調整 */
+    #fileNameLabel,
+    #pdfFileName,
+    #jpgFileName {
+        display: block;
+        text-align: center;
+        word-break: break-all;
+        margin-left: 0;
+        margin-top: 8px;
+    }
+
+    /* pdf_jpg.htmlではflexのgapで調整するので不要 */
+    .file-select-container span {
+        margin-top: 0;
+    }
+
+    /* join_pdf.html などで <br> がある場合の調整 */
+    .file-label-button + br + #fileNameLabel {
+        margin-top: 4px;
+    }
+}

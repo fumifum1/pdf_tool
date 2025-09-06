@@ -1,0 +1,39 @@
+.converter-section {
+    margin-bottom: 30px;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.file-select-container {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    align-items: center;
+}
+.options-container {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap; /* スマホ表示で折り返す */
+}
+.option-description {
+    font-size: 0.8em;
+    color: #555;
+    margin: 0;
+}
+.info {
+    margin-top: 15px;
+    font-style: italic;
+    color: #555;
+    text-align: center;
+}
+hr {
+    border: 0;
+    height: 1px;
+    background: #ccc;
+    margin: 30px 0;
+}
