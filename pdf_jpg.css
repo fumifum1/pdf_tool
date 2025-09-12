@@ -8,6 +8,7 @@
 }
 .file-select-container {
     display: flex;
+    flex-direction: column;
     gap: 10px;
     margin: 15px 0;
     align-items: center;
@@ -24,6 +25,8 @@
     font-size: 0.8em;
     color: #555;
     margin: 0;
+    flex-basis: 100%;
+    text-align: center;
 }
 .info {
     margin-top: 15px;
