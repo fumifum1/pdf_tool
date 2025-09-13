@@ -7,11 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const convertJpgBtn = document.getElementById('convertJpgBtn');
     const pdfStatusMessage = document.getElementById('pdfStatusMessage');
     const jpgStatusMessage = document.getElementById('jpgStatusMessage');
+    const compressPdfInput = document.getElementById('compressPdfInput');
+    const compressPdfFileName = document.getElementById('compressPdfFileName');
+    const compressPdfBtn = document.getElementById('compressPdfBtn');
+    const compressPdfStatusMessage = document.getElementById('compressPdfStatusMessage');
 
     pdfInput.addEventListener('change', () => updateFileName(pdfInput, pdfFileName));
     jpgInput.addEventListener('change', () => updateFileName(jpgInput, jpgFileName));
+    compressPdfInput.addEventListener('change', () => updateFileName(compressPdfInput, compressPdfFileName));
+
     convertPdfBtn.addEventListener('click', convertToJpg);
     convertJpgBtn.addEventListener('click', convertToPdf);
+    compressPdfBtn.addEventListener('click', compressPdf);
 
     function updateFileName(input, display) {
         if (input.files.length > 0) {
@@ -147,6 +154,109 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('変換中にエラーが発生しました。');
         } finally {
             convertJpgBtn.disabled = false;
+        }
+    }
+
+    async function compressPdf() {
+        const file = compressPdfInput.files[0];
+        
+        if (!file) {
+            alert('PDFファイルを選択してください。');
+            return;
+        }
+
+        compressPdfBtn.disabled = true;
+        compressPdfStatusMessage.textContent = '軽量化を開始しています...';
+
+        try {
+            const qualitySelector = document.getElementById('compressQuality');
+            const scale = parseFloat(qualitySelector.value);
+
+            const arrayBuffer = await file.arrayBuffer();
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+            const pdf = await loadingTask.promise;
+            const numPages = pdf.numPages;
+
+            const imageBlobs = [];
+            for (let i = 1; i <= numPages; i++) {
+                compressPdfStatusMessage.textContent = `ページを画像に変換中... (${i}/${numPages})`;
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({ scale: scale });
+                
+                const canvas = document.createElement('canvas');
+                const canvasContext = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext,
+                    viewport,
+                };
+                await page.render(renderContext).promise;
+
+                const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85)); // 品質の調整
+                imageBlobs.push(imageBlob);
+            }
+            
+            compressPdfStatusMessage.textContent = '画像をPDFに再変換しています...';
+            let doc = null;
+
+            for (let i = 0; i < imageBlobs.length; i++) {
+                const blob = imageBlobs[i];
+                
+                const imgData = await new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(blob);
+                });
+
+                const img = new Image();
+                await new Promise(resolve => {
+                    img.onload = resolve;
+                    img.src = imgData;
+                });
+                
+                const orientation = img.width > img.height ? 'l' : 'p';
+                const format = 'a4';
+
+                if (doc === null) {
+                    doc = new jspdf.jsPDF({orientation, unit: 'mm', format});
+                } else {
+                    doc.addPage(format, orientation);
+                }
+                
+                const pdfPageWidth = doc.internal.pageSize.getWidth();
+                const pdfPageHeight = doc.internal.pageSize.getHeight();
+                
+                const aspectRatio = img.width / img.height;
+                let newWidth, newHeight;
+
+                if (img.width / pdfPageWidth > img.height / pdfPageHeight) {
+                    newWidth = pdfPageWidth;
+                    newHeight = newWidth / aspectRatio;
+                } else {
+                    newHeight = pdfPageHeight;
+                    newWidth = newHeight * aspectRatio;
+                }
+                
+                const x = (pdfPageWidth - newWidth) / 2;
+                const y = (pdfPageHeight - newHeight) / 2;
+                
+                doc.addImage(imgData, 'JPEG', x, y, newWidth, newHeight);
+            }
+
+            const originalName = file.name.endsWith('.pdf') ? file.name.slice(0, -4) : file.name;
+            const pdfBlob = doc.output('blob');
+            saveAs(pdfBlob, `${originalName}_compressed.pdf`);
+            
+            compressPdfStatusMessage.textContent = '軽量化が完了し、ダウンロードが開始されました。';
+
+        } catch (error) {
+            console.error('PDFの軽量化中にエラーが発生しました:', error);
+            compressPdfStatusMessage.textContent = 'エラーが発生しました。コンソールを確認してください。';
+            alert('軽量化中にエラーが発生しました。');
+        } finally {
+            compressPdfBtn.disabled = false;
         }
     }
 });

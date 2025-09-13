@@ -24,7 +24,7 @@
                 <li><a href="join_pdf.html">PDF 結合</a></li>
                 <li><a href="split_pdf.html">PDF 分割</a></li>
                 <li><a href="change_order_pdf.html">PDF ページ順序変更</a></li>
-                <li><a href="pdf_jpg.html">PDF⇔JPEG 変換</a></li>
+                <li><a href="pdf_jpg.html">PDF⇔JPEG</a></li>
                 <hr>
                 <li><a href="https://fumifum1.github.io/main/index.html">Creator</a></li>
             </ul>
@@ -72,10 +72,33 @@
             <button id="convertJpgBtn">PDFへ変換</button>
             <div class="info" id="jpgStatusMessage"></div>
         </div>
+
+        <hr>
+
+        <div class="converter-section">
+            <h2>PDFの軽量化（圧縮）</h2>
+            <p>PDFのファイルサイズを圧縮します。画質を選択して、最適なファイルサイズに調整してください。</p>
+            <div class="file-select-container">
+                <label class="file-label-button" for="compressPdfInput">ファイルを選択</label>
+                <span id="compressPdfFileName">ファイルが選択されていません</span>
+                <input type="file" id="compressPdfInput" accept=".pdf">
+            </div>
+            <div class="options-container">
+                <label for="compressQuality">画質:</label>
+                <select id="compressQuality">
+                    <option value="1.0">低 (約72dpi - ファイルサイズ最小)</option>
+                    <option value="1.5" selected>中 (約108dpi - 推奨)</option>
+                    <option value="2.0">高 (約144dpi - ファイルサイズ大)</option>
+                </select>
+                <p class="option-description">画質を下げるとファイルサイズが小さくなりますが、文字や画像が荒くなる場合があります。</p>
+            </div>
+            <button id="compressPdfBtn">PDFを軽量化</button>
+            <div class="info" id="compressPdfStatusMessage"></div>
+        </div>
     </div>
 
     <footer>
-        &copy; 2025 Synapse Creations. Aug.PDF Tool_ver2.0.1
+        &copy; 2025 Synapse Creations. Aug.PDF Tool_ver2.0.2
     </footer>
 
     <script src="./pdf.min.js"></script>
